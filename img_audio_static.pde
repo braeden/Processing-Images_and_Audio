@@ -18,7 +18,7 @@ void setup() {
   size(1280, 800);
 
   // initialize the image
-  image = loadImage("data/cheetah.jpg");
+  image = loadImage("data/pluto.png");
 
   // initialize the audio player
   minim = new Minim(this);
@@ -68,29 +68,15 @@ void echoImage() {
   loadPixels();
   for (int col=0; col<width; col++) { // go column by column
     for (int row=0; row<height; row++) { // go through each row
-      int current = index(row, col);
-      // average the current and echo frame for all channels
-      float b = (blue(pixels[current]));
-      float r = (red(pixels[current]));
-      float g = (green(pixels[current]));
       if (int(random(0, 1000)) == 50) {
-        int offset = int(random(1,10));
+        int randPix  = index(int(random(0,height)), int(random(0,width))); //Choose random pixel to color
+        int offset = int(random(1,10)); //Glitching offset amount
         for (int i = offset; i<width; i++) {
-          int now = index(row, i);
-          int back = index(row, i-offset);
-          pixels[back] = pixels[now];
-          //Import row into arrayList
-          //if (i<offset) {
-            //for (int j = 1; j<width; j++) {
-              
-           // }
-            //pixels[back] = pixels[now];
-           // pixels[now] = color(0,0,255);
-         // }
+          int now = index(row, i);          //  |
+          int back = index(row, i-offset);  //  v
+          pixels[back] = pixels[now]; //Move pixels towards the left in the row by offset amount
         }
-       //pixels[current]  = color(random(0, 255), random(0, 255), random(0, 255));
-      } else {
-        pixels[current] = color(r, g, b);
+        pixels[randPix] = color(random(0, 255), random(0, 255), random(0, 255)); //Random colored pixesl around the image
       }
     }
   }
@@ -109,3 +95,5 @@ int col(int index) {
 int index(int row, int col) {
   return(row*width + col);
 }
+
+    //pixels[current]  = color(random(0, 255), random(0, 255), random(0, 255))
