@@ -73,8 +73,22 @@ void echoImage() {
       float b = (blue(pixels[current]));
       float r = (red(pixels[current]));
       float g = (green(pixels[current]));
-      if (int(random(0, 5)) == 1) {
-        pixels[current]  = color(random(0, 255), random(0, 255), random(0, 255));
+      if (int(random(0, 1000)) == 50) {
+        int offset = int(random(1,10));
+        for (int i = offset; i<width; i++) {
+          int now = index(row, i);
+          int back = index(row, i-offset);
+          pixels[back] = pixels[now];
+          //Import row into arrayList
+          //if (i<offset) {
+            //for (int j = 1; j<width; j++) {
+              
+           // }
+            //pixels[back] = pixels[now];
+           // pixels[now] = color(0,0,255);
+         // }
+        }
+       //pixels[current]  = color(random(0, 255), random(0, 255), random(0, 255));
       } else {
         pixels[current] = color(r, g, b);
       }
