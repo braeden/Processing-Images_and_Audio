@@ -18,7 +18,7 @@ void setup() {
   size(1280, 800);
 
   // initialize the image
-  image = loadImage("data/pluto.png");
+  image = loadImage("data/cheetah.jpg");
 
   // initialize the audio player
   minim = new Minim(this);
@@ -68,7 +68,7 @@ void echoImage() {
   loadPixels();
   for (int col=0; col<width; col++) { // go column by column
     for (int row=0; row<height; row++) { // go through each row
-      if (int(random(0, 1000)) == 50) {
+      if (int(random(0, 1000)) == 500) {
         int randPix  = index(int(random(0,height)), int(random(0,width))); //Choose random pixel to color
         int offset = int(random(1,10)); //Glitching offset amount
         for (int i = offset; i<width; i++) {
