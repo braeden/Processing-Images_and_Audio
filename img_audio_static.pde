@@ -18,7 +18,7 @@ void setup() {
   size(1280, 800);
 
   // initialize the image
-  image = loadImage("data/cheetah.jpg");
+  image = loadImage("data/pluto.png");
 
   // initialize the audio player
   minim = new Minim(this);
@@ -37,7 +37,8 @@ void draw() {
   image(image, 0, 0); // redraw the image
 
   if (keyPressed) {
-    echoImage();
+    glitchImage();
+    pixelateImage();
     echoAudio();
   } else {
     normalAudio();
@@ -63,20 +64,46 @@ void normalAudio() {
   }
 }
 
-// Image Effects
-void echoImage() {
+// Image Static glitch
+void glitchImage() {
   loadPixels();
   for (int col=0; col<width; col++) { // go column by column
     for (int row=0; row<height; row++) { // go through each row
       if (int(random(0, 1000)) == 500) {
         int randPix  = index(int(random(0,height)), int(random(0,width))); //Choose random pixel to color
-        int offset = int(random(1,10)); //Glitching offset amount
+        int offset = int(random(1,20)); //Glitching offset amount
         for (int i = offset; i<width; i++) {
           int now = index(row, i);          //  |
           int back = index(row, i-offset);  //  v
           pixels[back] = pixels[now]; //Move pixels towards the left in the row by offset amount
         }
         pixels[randPix] = color(random(0, 255), random(0, 255), random(0, 255)); //Random colored pixesl around the image
+      }
+    }
+  }
+  updatePixels();
+}
+void pixelateImage() {
+  loadPixels();
+  int square = 10; //average pixel square size
+  for (int col=0; col<width; col+=square) { // go column by column
+    for (int row=0; row<height; row+=square) { // go through each row
+      color[][] pixelArray = new color[square][square];
+      //Load array 
+      for (int across = 0; across<square; across++) {
+        for (int down = 0; down<square; down++) {
+          int horzPix = across;
+          int vertPix = down;
+          int now = index(horzPix, vertPix);
+          pixelArray[across][down] = pixels[now];
+        }
+      }
+      color average = averageColors(pixelArray);
+      for (int across = 0; across<square; across++) {
+        for (int down = 0; down<square; down++) {
+          int now = index(across, down);
+          pixels[now] = average;
+        }
       }
     }
   }
@@ -96,4 +123,22 @@ int index(int row, int col) {
   return(row*width + col);
 }
 
+color averageColors(color[][] colorArray) {
+  int redAvg = 0;
+  int greenAvg = 0;
+  int blueAvg = 0;
+  color finalCol = color(0,0,0);
+  for (int across = 0; across<colorArray.length; across++) {
+    for (int down = 0; down<colorArray.length; down++) {
+      redAvg += red(colorArray[across][down]);
+      greenAvg += green(colorArray[across][down]);
+      blueAvg += blue(colorArray[across][down]);
+    }
+  }
+  redAvg = redAvg/(colorArray.length*colorArray.length);
+  greenAvg = greenAvg/(colorArray.length*colorArray.length);
+  blueAvg = blueAvg/(colorArray.length*colorArray.length);
+  finalCol = color(redAvg, greenAvg, blueAvg);
+  return(finalCol);
+}
     //pixels[current]  = color(random(0, 255), random(0, 255), random(0, 255))
