@@ -89,17 +89,16 @@ void pixelateImage() {
   for (int col=0; col<width; col+=square) { // go column by column
     for (int row=0; row<height; row+=square) { // go through each row
       color[][] pixelArray = new color[square][square];
-      //Load array 
-      for (int across = 0; across<square; across++) {
+      for (int across = 0; across<square; across++) { //Read each color into a 2d array of colors
         for (int down = 0; down<square; down++) {
-          int horzPix = across;
-          int vertPix = down;
+          int horzPix = col+across;
+          int vertPix = row+down;
           int now = index(horzPix, vertPix);
           pixelArray[across][down] = pixels[now];
         }
       }
-      color average = averageColors(pixelArray);
-      for (int across = 0; across<square; across++) {
+      color average = averageColors(pixelArray); //Get the average color
+      for (int across = 0; across<square; across++) { //Write average color to each pixel
         for (int down = 0; down<square; down++) {
           int now = index(across, down);
           pixels[now] = average;
@@ -135,10 +134,10 @@ color averageColors(color[][] colorArray) {
       blueAvg += blue(colorArray[across][down]);
     }
   }
-  redAvg = redAvg/(colorArray.length*colorArray.length);
-  greenAvg = greenAvg/(colorArray.length*colorArray.length);
-  blueAvg = blueAvg/(colorArray.length*colorArray.length);
+  int totalSize = colorArray.length*colorArray.length;
+  redAvg = redAvg/(totalSize);
+  greenAvg = greenAvg/(totalSize);
+  blueAvg = blueAvg/(totalSize);
   finalCol = color(redAvg, greenAvg, blueAvg);
   return(finalCol);
 }
-    //pixels[current]  = color(random(0, 255), random(0, 255), random(0, 255))
