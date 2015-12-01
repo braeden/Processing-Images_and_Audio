@@ -37,9 +37,14 @@ void draw() {
   image(image, 0, 0); // redraw the image
 
   if (keyPressed) {
-    glitchImage();
-    pixelateImage();
-    echoAudio();
+    if (key == '1') {
+      glitchImage(20);
+      echoAudio();
+    } else if (key == '2') {
+      pixelateImage(10);
+    } else if (key == ESC) {
+      exit();
+    }
   } else {
     normalAudio();
   }
@@ -65,13 +70,13 @@ void normalAudio() {
 }
 
 // Image Static glitch
-void glitchImage() {
+void glitchImage(int maxGlitch) {
   loadPixels();
   for (int col=0; col<width; col++) { // go column by column
     for (int row=0; row<height; row++) { // go through each row
       if (int(random(0, 1000)) == 500) {
         int randPix  = index(int(random(0,height)), int(random(0,width))); //Choose random pixel to color
-        int offset = int(random(1,20)); //Glitching offset amount
+        int offset = int(random(1,maxGlitch)); //Glitching offset amount
         for (int i = offset; i<width; i++) {
           int now = index(row, i);          //  |
           int back = index(row, i-offset);  //  v
@@ -83,24 +88,22 @@ void glitchImage() {
   }
   updatePixels();
 }
-void pixelateImage() {
+void pixelateImage(int pixSize) {
   loadPixels();
-  int square = 10; //average pixel square size
-  for (int col=0; col<width; col+=square) { // go column by column
-    for (int row=0; row<height; row+=square) { // go through each row
+  int square = pixSize; //average pixel square size
+  for (int col=0; col<width-square; col+=square) { // go column by column
+    for (int row=0; row<height-square; row+=square) { // go through each row
       color[][] pixelArray = new color[square][square];
       for (int across = 0; across<square; across++) { //Read each color into a 2d array of colors
         for (int down = 0; down<square; down++) {
-          int horzPix = col+across;
-          int vertPix = row+down;
-          int now = index(horzPix, vertPix);
+          int now = index(row+across, col+down);
           pixelArray[across][down] = pixels[now];
         }
       }
       color average = averageColors(pixelArray); //Get the average color
       for (int across = 0; across<square; across++) { //Write average color to each pixel
         for (int down = 0; down<square; down++) {
-          int now = index(across, down);
+          int now = index(row+across, col+down);
           pixels[now] = average;
         }
       }
