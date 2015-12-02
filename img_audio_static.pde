@@ -126,21 +126,21 @@ int index(int row, int col) {
 }
 
 color averageColors(color[][] colorArray) {
-  int redAvg = 0;
-  int greenAvg = 0;
-  int blueAvg = 0;
+  double redAvg = 0;
+  double greenAvg = 0;
+  double blueAvg = 0;
   color finalCol = color(0,0,0);
   for (int across = 0; across<colorArray.length; across++) {
     for (int down = 0; down<colorArray.length; down++) {
-      redAvg += red(colorArray[across][down]);
-      greenAvg += green(colorArray[across][down]);
-      blueAvg += blue(colorArray[across][down]);
-    }
-  }
+      redAvg += Math.pow(red(colorArray[across][down]), 2);
+      greenAvg += Math.pow(green(colorArray[across][down]), 2);
+      blueAvg += Math.pow(blue(colorArray[across][down]), 2);
+    } //Thanks /u/gliph
+  } //https://www.youtube.com/watch?v=LKnqECcg6Gw
   int totalSize = colorArray.length*colorArray.length;
-  redAvg = redAvg/(totalSize);
-  greenAvg = greenAvg/(totalSize);
-  blueAvg = blueAvg/(totalSize);
-  finalCol = color(redAvg, greenAvg, blueAvg);
+  redAvg = Math.sqrt(redAvg/(totalSize));
+  greenAvg = Math.sqrt(greenAvg/(totalSize));
+  blueAvg = Math.sqrt(blueAvg/(totalSize));
+  finalCol = color((int) redAvg, (int) greenAvg,(int) blueAvg);
   return(finalCol);
 }
