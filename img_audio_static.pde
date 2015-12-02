@@ -18,11 +18,11 @@ void setup() {
   size(1280, 800);
 
   // initialize the image
-  image = loadImage("data/pluto.png");
+  image = loadImage("data/rocket.jpg");
 
   // initialize the audio player
   minim = new Minim(this);
-  player = new FilePlayer(minim.loadFileStream("cheetah.wav"));
+  player = new FilePlayer(minim.loadFileStream("spaceoddity.mp3"));
   player.loop();
 
   // initialize the audio effect
@@ -38,7 +38,7 @@ void draw() {
 
   if (keyPressed) {
     if (key == '1') {
-      glitchImage(20);
+      glitchImage(10);
       echoAudio();
     } else if (key == '2') {
       pixelateImage(10);
