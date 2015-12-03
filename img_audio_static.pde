@@ -1,15 +1,17 @@
 import ddf.minim.*;
 import ddf.minim.analysis.*;
 import ddf.minim.effects.*;
-import ddf.minim.signals.*;
+//import ddf.minim.signals.*;
 import ddf.minim.spi.*;
 import ddf.minim.ugens.*;
+import processing.sound.*;
+PinkNoise pinkN;
+
 
 // Global Variables
 PImage image;
 Minim minim;
 FilePlayer player;
-Noise pinkN;
 AudioOutput out;
 
 int ECHO_FRAMES = 100; // pixels and hundreths of a second
@@ -26,7 +28,7 @@ void setup() {
   player.loop();
 
   // initialize the audio effect
-  pinkN = new Noise(1, Noise.Tint.PINK);
+  pinkN = new PinkNoise(this);
   // initialize the audio output
   out = minim.getLineOut();  
   player.patch(out); // patch the player to the output
@@ -39,6 +41,7 @@ void draw() {
   if (keyPressed) {
     if (key == '1') {
       glitchImage(10);
+      glitching = true;
       glitchAudio();
     } else if (key == '2') {
       pixelateImage(20);
@@ -48,16 +51,23 @@ void draw() {
     }
   } else {
     normalAudio();
+    glitching = false;
+    playOnce = true;
   }
 }
 
 // Audio Effects
 boolean glitching = false;
 boolean pixelating = false;
+boolean playOnce = true;
 void glitchAudio() {
   if (glitching) { // if sound is not glitching patch in the echo
-    player.unpatch(out);
-    player.patch(pinkN).patch(out);
+    if (playOnce) { //Make sure the sound doesnt continue to play
+      pinkN.play();
+      pinkN.amp(random(1, 5)/10); //Choose random volume for pinkNoise;
+      playOnce = false;
+    }
+
     glitching = true;
   }
 }
@@ -69,8 +79,8 @@ void pixelateAudio() {
 void normalAudio() {
   if (glitching || pixelating) { // if sound is glitching or pixelating remove the patch
     player.unpatch(out);
-    player.unpatch(pinkN);
     player.patch(out);
+    pinkN.stop();
     glitching = false;
     pixelating = false;
   }
