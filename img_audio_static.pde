@@ -5,12 +5,13 @@ import ddf.minim.effects.*;
 import ddf.minim.spi.*;
 import ddf.minim.ugens.*;
 import processing.sound.*;
-PinkNoise pinkN;
 
 
 // Global Variables
 PImage image;
 Minim minim;
+PinkNoise pinkN;
+BitCrush bitCrush;
 FilePlayer player;
 AudioOutput out;
 
@@ -26,12 +27,12 @@ void setup() {
   minim = new Minim(this);
   player = new FilePlayer(minim.loadFileStream("spaceoddity.mp3"));
   player.loop();
-
   // initialize the audio effect
   pinkN = new PinkNoise(this);
   // initialize the audio output
   out = minim.getLineOut();  
   player.patch(out); // patch the player to the output
+  println(out.sampleRate());
 }
 
 void draw() {  
@@ -44,13 +45,15 @@ void draw() {
       glitching = true;
       glitchAudio();
     } else if (key == '2') {
-      pixelateImage(20);
+      pixelateImage(10);
+      pixelating = true;
       pixelateAudio();
     } else if (key == ESC) {
       exit();
     }
   } else {
     normalAudio();
+    pixelating = false;
     glitching = false;
     playOnce = true;
   }
@@ -64,7 +67,7 @@ void glitchAudio() {
   if (glitching) { // if sound is not glitching patch in the echo
     if (playOnce) { //Make sure the sound doesnt continue to play
       pinkN.play();
-      pinkN.amp(random(1, 5)/10); //Choose random volume for pinkNoise;
+      pinkN.amp(random(1, 9)/10); //Choose random volume for pinkNoise;
       playOnce = false;
     }
 
@@ -73,13 +76,24 @@ void glitchAudio() {
 }
 void pixelateAudio() {
   if (pixelating) { // if sound is not glitching patch in the echo
+    if (playOnce) {
+       bitCrush = new BitCrush(4, out.sampleRate()); //4 = bit res
+       player.patch(bitCrush); //Start Bitcrush
+       bitCrush.patch(out);
+       pixelating = false;
+       playOnce = false;
+    }
   }
 }
 
 void normalAudio() {
   if (glitching || pixelating) { // if sound is glitching or pixelating remove the patch
-    player.unpatch(out);
-    player.patch(out);
+    if (pixelating) {
+      player.unpatch(bitCrush); //Kill bitcrush
+      player.unpatch(out);
+      bitCrush.unpatch(out);
+      player.patch(out);
+    }
     pinkN.stop();
     glitching = false;
     pixelating = false;
@@ -150,7 +164,6 @@ color averageColors(color[][] colorArray) {
   double redAvg = 0;
   double greenAvg = 0;
   double blueAvg = 0;
-  color finalCol = color(0,0,0);
   for (int across = 0; across<colorArray.length; across++) {
     for (int down = 0; down<colorArray.length; down++) {
       redAvg += Math.pow(red(colorArray[across][down]), 2);
@@ -162,7 +175,7 @@ color averageColors(color[][] colorArray) {
   redAvg = Math.sqrt(redAvg/(totalSize));
   greenAvg = Math.sqrt(greenAvg/(totalSize));
   blueAvg = Math.sqrt(blueAvg/(totalSize));
-  finalCol = color((int) redAvg, (int) greenAvg,(int) blueAvg);
+  color finalCol = color((int) redAvg, (int) greenAvg,(int) blueAvg);
   return(finalCol);
 }
 
