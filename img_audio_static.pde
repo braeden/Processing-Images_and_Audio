@@ -106,14 +106,8 @@ void glitchImage(int maxGlitch) {
   for (int col=0; col<width; col++) { // go column by column
     for (int row=0; row<height; row++) { // go through each row
       if (int(random(0, 1000)) == 500) {
-        int randPix  = index(int(random(0,height)), int(random(0,width))); //Choose random pixel to color
-        int offset = int(random(1,maxGlitch)); //Glitching offset amount
-        for (int i = offset; i<width; i++) {
-          int now = index(row, i);          //  |
-          int back = index(row, i-offset);  //  v
-          pixels[back] = pixels[now]; //Move pixels towards the left in the row by offset amount
-        }
-        pixels[randPix] = color(random(0, 255), random(0, 255), random(0, 255)); //Random colored pixesl around the image
+        offsetPixels(row, col, maxGlitch); //Gen rand number and offset row to left
+        randomPixel(); //Place a random colored pixel in a random place within the image
       }
     }
   }
@@ -147,6 +141,20 @@ int index(int row, int col) {
   return(row*width + col);
 }
 
+
+void offsetPixels(int row, int col, int maxGlitch) {
+  int offset = int(random(1,maxGlitch)); //Glitching offset amount
+  for (int i = offset; i<width; i++) {
+    int now = index(row, i);          //  |
+    int back = index(row, i-offset);  //  v
+    pixels[back] = pixels[now]; //Move pixels towards the left in the row by offset amount
+  }
+}
+
+void randomPixel() {
+  int randPix  = index(int(random(0,height)), int(random(0,width))); //Choose random pixel to color
+  pixels[randPix] = color(random(0, 255), random(0, 255), random(0, 255)); //Random colored pixesl around the image
+}
 
 //Abtracted fucntions for pixelation of image
 color[][] getColors(int row, int col, int square) {
